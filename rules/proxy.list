@@ -1,3 +1,4 @@
 # 强制走 🚀 节点选择 策略组，每行一条规则，不写末尾的策略名称。
 # DOMAIN-SUFFIX,example.com
 # DOMAIN,api.example.net
+DOMAIN,uscardforum.com
