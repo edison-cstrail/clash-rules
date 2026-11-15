@@ -54,6 +54,6 @@ DOMAIN,intranet.example.com
 
 本配置沿用 `expand=true` 的完整订阅方式，规则在转换时写入输出配置，客户端通过更新订阅获取变更。
 
-修改策略组、规则顺序或社区规则来源时，直接编辑 [config/github.ini](https://github.com/edison-cstrail/clash-rules/edit/main/config/github.ini) 并提交。基础输出配置位于 `config/clash-base.yaml`。
+修改策略组、规则顺序或社区规则来源时，直接编辑 [config/github.ini](https://github.com/edison-cstrail/clash-rules/edit/main/config/github.ini) 并提交。
 
 参考：[subconverter 外部配置说明](https://github.com/tindy2013/subconverter/blob/master/README-cn.md#外部配置)、[社区规则来源](https://github.com/dler-io/Rules/tree/main/Clash/Provider)。
