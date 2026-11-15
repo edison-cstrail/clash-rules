@@ -1,0 +1,3 @@
+# These domains use the Proxy group. Add your own domains below.
+# DOMAIN-SUFFIX,example.com
+# DOMAIN,api.example.net

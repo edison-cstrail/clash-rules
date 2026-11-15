@@ -1,0 +1,44 @@
+services:
+  subconverter:
+    # Official image tested with this configuration; override to upgrade deliberately.
+    image: ${SUBCONVERTER_IMAGE:-tindy2013/subconverter@sha256:9fd004f00e90a7f67631f4d9a3f435c95b0fe58e7afdce8b8c6ca28c92826632}
+    command: [subconverter, -f, pref.ini]
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:25500:25500"
+    volumes:
+      - ./private/pref.ini:/base/pref.ini:ro
+      - ./private:/base/private:ro
+      - ./config:/base/config/custom:ro
+      - ./rules:/base/rules/custom:ro
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, http://127.0.0.1:25500/version]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  caddy:
+    image: caddy:2-alpine
+    profiles: [https]
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN:-localhost}
+      SUB_TOKEN: ${SUB_TOKEN:?Run python3 scripts/init.py first}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      subconverter:
+        condition: service_healthy
+
+volumes:
+  caddy_data:
+  caddy_config:
