@@ -17,6 +17,7 @@ ruleset=DIRECT,https://example.com/direct.list
 ruleset=🚀 节点选择,https://example.com/proxy.list
 ruleset=Final,[]FINAL
 custom_proxy_group=🚀 节点选择`select`[]Auto`[]DIRECT`.*
+custom_proxy_group=💬 Ai平台`select`[]🚀 节点选择`[]DIRECT
 custom_proxy_group=Auto`url-test`.*`https://example.com/check`300
 custom_proxy_group=Final`select`[]🚀 节点选择`[]DIRECT
 enable_rule_generator=true
@@ -28,9 +29,9 @@ class RenderTests(unittest.TestCase):
     def test_personal_rules_precede_complete_upstream(self):
         entries = sync.parse_config(sync.render_config(UPSTREAM, REVISION))
         rules = [value for key, value in entries if key == "ruleset"]
-        self.assertEqual(rules[:4], list(sync.personal_rulesets(REVISION)))
+        self.assertEqual(rules[:5], list(sync.personal_rulesets(REVISION)))
         self.assertIn(f"/{REVISION}/rules/proxy.list", rules[2])
-        self.assertEqual(entries[4:], sync.parse_config(UPSTREAM))
+        self.assertEqual(entries[5:], sync.parse_config(UPSTREAM))
         self.assertEqual(rules[-1], "Final,[]FINAL")
 
     def test_new_upstream_category_and_group_are_retained(self):
@@ -41,7 +42,20 @@ class RenderTests(unittest.TestCase):
         rendered = sync.render_config(upstream, REVISION)
         self.assertIn("ruleset=New,https://example.com/new.list", rendered)
         self.assertIn("custom_proxy_group=New`select`[]🚀 节点选择", rendered)
-        self.assertEqual(sync.parse_config(rendered)[4:], sync.parse_config(upstream))
+        self.assertEqual(sync.parse_config(rendered)[5:], sync.parse_config(upstream))
+
+    def test_apple_ai_precedes_broad_community_apple_rules(self):
+        apple = "🍎 苹果服务,https://example.com/apple.list"
+        upstream = UPSTREAM.replace(
+            "ruleset=Final,[]FINAL", f"ruleset={apple}\nruleset=Final,[]FINAL",
+        ) + "custom_proxy_group=🍎 苹果服务`select`[]DIRECT\n"
+        entries = sync.parse_config(sync.render_config(upstream, REVISION))
+        rules = [value for key, value in entries if key == "ruleset"]
+        apple_ai = (
+            f"💬 Ai平台,{sync.PERSONAL_BASE}/{REVISION}/rules/apple-ai.list"
+        )
+        self.assertLess(rules.index(apple_ai), rules.index(apple))
+        self.assertEqual(rules[-1], "Final,[]FINAL")
 
     def test_runtime_templates_are_omitted(self):
         upstream = UPSTREAM + (
@@ -60,6 +74,7 @@ class RenderTests(unittest.TestCase):
             "unknown section": UPSTREAM + "[other]\n",
             "runtime option": UPSTREAM + "mixed-port=7890\n",
             "missing personal proxy target": UPSTREAM.replace("🚀 节点选择", "Renamed"),
+            "missing AI target": UPSTREAM.replace("💬 Ai平台", "Renamed AI"),
             "dangling group reference": UPSTREAM.replace("[]Auto", "[]Missing"),
             "dangling policy": UPSTREAM.replace("ruleset=DIRECT,", "ruleset=Missing,"),
             "duplicate group": UPSTREAM + "custom_proxy_group=Auto`select`.*\n",
@@ -108,7 +123,7 @@ class RevisionTests(unittest.TestCase):
         changed_community = UPSTREAM.replace("direct.list", "new-direct.list")
         updated = sync.render_config(changed_community, revision)
         rulesets = [value for key, value in sync.parse_config(updated) if key == "ruleset"]
-        self.assertEqual(rulesets[:4], list(sync.personal_rulesets(self.first_revision)))
+        self.assertEqual(rulesets[:5], list(sync.personal_rulesets(self.first_revision)))
 
     def test_personal_rule_edit_changes_reference_urls(self):
         self.rules.write_text("DOMAIN,first.test\nDOMAIN,test.test\n")

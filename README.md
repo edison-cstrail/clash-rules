@@ -29,6 +29,7 @@ config=https%3A%2F%2Fraw.githubusercontent.com%2Fedison-cstrail%2Fclash-rules%2F
 | [rules/direct.list](https://github.com/edison-cstrail/clash-rules/edit/main/rules/direct.list) | 强制直连 |
 | [rules/proxy.list](https://github.com/edison-cstrail/clash-rules/edit/main/rules/proxy.list) | 强制走 🚀 节点选择 策略组 |
 | [rules/reject.list](https://github.com/edison-cstrail/clash-rules/edit/main/rules/reject.list) | 阻止连接 |
+| [rules/apple-ai.list](https://github.com/edison-cstrail/clash-rules/edit/main/rules/apple-ai.list) | Apple Intelligence、Siri、搜索和 PCC 云计算，走 💬 Ai平台 策略组 |
 
 例如，让 `example.com` 及其所有子域名走代理，在 `rules/proxy.list` 添加：
 
@@ -52,7 +53,9 @@ DOMAIN,intranet.example.com
 
 社区来源是 [ACL4SSR 完整在线版](https://github.com/ACL4SSR/ACL4SSR/blob/master/Clash/config/ACL4SSR_Online_Full.ini)。保留上游全部分类、策略组和匹配顺序，包括广告、应用净化、AI、微软、苹果、电报、视频、游戏、地区分组等，新增分类和组定义也随上游同步。
 
-`config/github.ini` 在完整社区配置之前加入本仓库的个人拦截、直连、代理和局域网规则。第一条命中的规则生效，社区兜底规则保持在最后。个人规则引用固定提交版本，社区规则文件继续引用上游 URL，由转换服务在处理订阅更新时获取。
+`config/github.ini` 在完整社区配置之前加入本仓库的个人拦截、直连、代理、局域网和 Apple AI 规则。第一条命中的规则生效，社区兜底规则保持在最后。个人规则引用固定提交版本，社区规则文件继续引用上游 URL，由转换服务在处理订阅更新时获取。
+
+Apple AI 规则依据 [Apple 官方网络要求](https://support.apple.com/en-us/101555)，优先于社区的通用苹果规则，避免相关域名默认直连。在客户端将“💬 Ai平台”选为可用地区的节点，例如美国；添加规则不会改变客户端已经保存的策略组选择。设备和账户资格、TUN 接管及实际服务可用性仍需在客户端验证。
 
 本配置沿用 `expand=true` 的完整订阅方式，规则在转换时写入输出配置，客户端通过更新订阅获取变更。
 

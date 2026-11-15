@@ -1,0 +1,9 @@
+# Apple Intelligence、Siri、搜索和 Private Cloud Compute，走 💬 Ai平台 策略组。
+# 来源：https://support.apple.com/en-us/101555
+# 每行一条规则，不写末尾的策略名称。
+DOMAIN,guzzoni.apple.com
+DOMAIN-SUFFIX,smoot.apple.com
+DOMAIN,apple-relay.cloudflare.com
+DOMAIN,apple-relay.fastly-edge.com
+DOMAIN,cp4.cloudflare.com
+DOMAIN,apple-relay.apple.com

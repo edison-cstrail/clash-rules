@@ -20,11 +20,13 @@ UPSTREAM_URL = (
 )
 PERSONAL_BASE = "https://raw.githubusercontent.com/edison-cstrail/clash-rules"
 PROXY_GROUP = "🚀 节点选择"
+AI_GROUP = "💬 Ai平台"
 PERSONAL_FILES = (
     ("REJECT", "reject.list"),
     ("DIRECT", "direct.list"),
     (PROXY_GROUP, "proxy.list"),
     ("DIRECT", "lan.list"),
+    (AI_GROUP, "apple-ai.list"),
 )
 FLAGS = {"enable_rule_generator", "overwrite_original_rules"}
 ALLOWED_KEYS = FLAGS | {"ruleset", "custom_proxy_group"}
@@ -94,8 +96,9 @@ def validate_config(entries):
         raise ValueError("Community config must contain rules and proxy groups")
     if len(set(names)) != len(names):
         raise ValueError("Duplicate proxy group names")
-    if PROXY_GROUP not in names:
-        raise ValueError(f"Personal proxy target is missing: {PROXY_GROUP}")
+    for policy, _ in PERSONAL_FILES:
+        if policy not in BUILTINS and policy not in names:
+            raise ValueError(f"Personal ruleset target is missing: {policy}")
     for flag in FLAGS:
         values = [value for key, value in entries if key == flag]
         if values != ["true"]:
@@ -133,7 +136,7 @@ def render_config(upstream, revision):
         if key.endswith("_rule_base"):
             continue
         if not inserted and line.partition("=")[0].strip() == "ruleset":
-            lines.append("; 个人拦截 → 个人直连 → 个人代理 → 局域网 → 完整社区分流")
+            lines.append("; 个人拦截 → 个人直连 → 个人代理 → 局域网 → Apple AI → 完整社区分流")
             lines.extend(f"ruleset={rule}" for rule in personal_rulesets(revision))
             lines.append("")
             inserted = True
