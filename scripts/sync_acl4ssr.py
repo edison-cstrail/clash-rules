@@ -4,6 +4,7 @@
 from collections import Counter
 import os
 from pathlib import Path
+import subprocess
 import sys
 import tempfile
 import time
@@ -17,18 +18,44 @@ UPSTREAM_URL = (
     "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/"
     "Clash/config/ACL4SSR_Online_Full.ini"
 )
-PERSONAL_BASE = "https://raw.githubusercontent.com/edison-cstrail/clash-rules/main/rules/"
+PERSONAL_BASE = "https://raw.githubusercontent.com/edison-cstrail/clash-rules"
 PROXY_GROUP = "🚀 节点选择"
-PERSONAL_RULESETS = (
-    f"REJECT,{PERSONAL_BASE}reject.list",
-    f"DIRECT,{PERSONAL_BASE}direct.list",
-    f"{PROXY_GROUP},{PERSONAL_BASE}proxy.list",
-    f"DIRECT,{PERSONAL_BASE}lan.list",
+PERSONAL_FILES = (
+    ("REJECT", "reject.list"),
+    ("DIRECT", "direct.list"),
+    (PROXY_GROUP, "proxy.list"),
+    ("DIRECT", "lan.list"),
 )
 FLAGS = {"enable_rule_generator", "overwrite_original_rules"}
 ALLOWED_KEYS = FLAGS | {"ruleset", "custom_proxy_group"}
 BUILTINS = {"DIRECT", "REJECT", "REJECT-DROP", "PASS", "COMPATIBLE", "GLOBAL"}
 MAX_CONFIG_BYTES = 1024 * 1024
+
+
+def personal_rules_revision(root=ROOT):
+    """Version by the last rules change, never by a generated-config commit."""
+    def git(*arguments):
+        try:
+            return subprocess.run(
+                ["git", *arguments], cwd=root, check=True,
+                capture_output=True, text=True,
+            ).stdout.strip()
+        except subprocess.CalledProcessError as error:
+            raise ValueError("Cannot read personal rules history from Git") from error
+
+    if git("rev-parse", "--is-shallow-repository") != "false":
+        raise ValueError("Full Git history is required; set checkout fetch-depth: 0")
+    revision = git("log", "-1", "--format=%H", "--", "rules/")
+    if not revision:
+        raise ValueError("No committed personal rules found in rules/")
+    return revision
+
+
+def personal_rulesets(revision):
+    return tuple(
+        f"{policy},{PERSONAL_BASE}/{revision}/rules/{filename}"
+        for policy, filename in PERSONAL_FILES
+    )
 
 
 def parse_config(text):
@@ -90,7 +117,7 @@ def validate_config(entries):
         raise ValueError("Exactly one final catch-all ruleset must come last")
 
 
-def render_config(upstream):
+def render_config(upstream, revision):
     upstream = upstream.lstrip("\ufeff")
     validate_config(parse_config(upstream))
     lines = [
@@ -107,7 +134,7 @@ def render_config(upstream):
             continue
         if not inserted and line.partition("=")[0].strip() == "ruleset":
             lines.append("; 个人拦截 → 个人直连 → 个人代理 → 局域网 → 完整社区分流")
-            lines.extend(f"ruleset={rule}" for rule in PERSONAL_RULESETS)
+            lines.extend(f"ruleset={rule}" for rule in personal_rulesets(revision))
             lines.append("")
             inserted = True
         lines.append(raw)
@@ -135,7 +162,8 @@ def download_upstream():
 
 
 def sync_config(output=OUTPUT):
-    rendered = render_config(download_upstream())
+    revision = personal_rules_revision()
+    rendered = render_config(download_upstream(), revision)
     if output.exists() and output.read_text(encoding="utf-8") == rendered:
         return False
 

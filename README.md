@@ -22,7 +22,7 @@ config=https%3A%2F%2Fraw.githubusercontent.com%2Fedison-cstrail%2Fclash-rules%2F
 
 ## 以后怎样修改个人规则
 
-登录 GitHub，打开下表对应的文件，编辑后提交；随后在 Clash Verge 更新订阅。
+登录 GitHub，打开下表对应的文件，编辑后提交；等待 [同步工作流](https://github.com/edison-cstrail/clash-rules/actions/workflows/sync.yml) 成功后，在 Clash Verge 更新原订阅。订阅链接无需修改。
 
 | 规则文件 | 行为 |
 | --- | --- |
@@ -44,13 +44,15 @@ DOMAIN,intranet.example.com
 
 每行写一条规则，以 `#` 开头的行是注释。`DOMAIN` 匹配具体主机名，`DOMAIN-SUFFIX` 匹配域名及其子域名。规则不填协议、URL 路径或末尾的策略名称。
 
-更新可能受到你所用转换服务和 GitHub 的缓存影响；缓存时间由实际服务决定。可以在 Clash Verge 设置定时更新订阅。
+个人规则引用使用最近一次修改 `rules/` 目录的 Git 提交号。规则变更会自动触发工作流，更新总配置内的个人规则地址，让转换服务重新获取文件，避免命中旧规则缓存。仅更新社区配置或生成总配置不会改变个人规则版本。
+
+总配置链接和客户端缓存仍遵循实际服务的缓存策略；工作流完成后如暂未看到变化，等待总配置缓存刷新后再更新订阅。可以在 Clash Verge 设置定时更新订阅。
 
 ## 配置与社区规则
 
 社区来源是 [ACL4SSR 完整在线版](https://github.com/ACL4SSR/ACL4SSR/blob/master/Clash/config/ACL4SSR_Online_Full.ini)。保留上游全部分类、策略组和匹配顺序，包括广告、应用净化、AI、微软、苹果、电报、视频、游戏、地区分组等，新增分类和组定义也随上游同步。
 
-`config/github.ini` 在完整社区配置之前加入本仓库的个人拦截、直连、代理和局域网规则。第一条命中的规则生效，社区兜底规则保持在最后。各分类的规则文件直接引用上游 URL，由转换服务在处理订阅更新时获取，遵循其缓存策略。
+`config/github.ini` 在完整社区配置之前加入本仓库的个人拦截、直连、代理和局域网规则。第一条命中的规则生效，社区兜底规则保持在最后。个人规则引用固定提交版本，社区规则文件继续引用上游 URL，由转换服务在处理订阅更新时获取。
 
 本配置沿用 `expand=true` 的完整订阅方式，规则在转换时写入输出配置，客户端通过更新订阅获取变更。
 
