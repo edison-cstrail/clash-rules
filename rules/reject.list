@@ -1,2 +1,2 @@
-# These domains are blocked. Add your own domains below.
+# 拦截连接，每行一条规则，不写末尾的策略名称。
 # DOMAIN-SUFFIX,ads.example.com

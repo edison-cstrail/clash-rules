@@ -1,7 +1,4 @@
-# One rule per line, without the policy (DIRECT is assigned in custom.ini).
-# Exact hostname:
+# 强制直连，每行一条规则，不写末尾的策略名称。
 # DOMAIN,intranet.example.com
-# Domain and all of its subdomains:
 # DOMAIN-SUFFIX,example.cn
-# IP network:
 # IP-CIDR,203.0.113.0/24,no-resolve
