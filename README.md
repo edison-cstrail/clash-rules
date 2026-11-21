@@ -69,11 +69,32 @@ Apple AI 规则依据 [Apple 官方网络要求](https://support.apple.com/en-us
 
 首次运行后检查 Actions 是否成功；若仓库策略禁止工作流写入，需要允许其提交配置。GitHub 定时任务可能延迟，公开仓库长期无活动时可能自动暂停，可在 Actions 页面重新启用并手动运行。
 
+## 3x-ui 原生 Clash 订阅
+
+如果使用 3x-ui 自带的 Clash 订阅，不需要 subconverter：工作流会把 `config/github.ini`
+转换成 3x-ui「全局路由规则」可以直接读取的 YAML。
+
+在 3x-ui 的 `设置 → 订阅 → Clash/Mihomo 订阅` 中：
+
+| 设置 | 值 |
+| --- | --- |
+| Clash / Mihomo 订阅 | 启用 |
+| 启用路由 | 启用 |
+| 全局路由规则 | `https://cdn.jsdelivr.net/gh/edison-cstrail/clash-rules@main/config/3xui.yaml` |
+
+`config/3xui.yaml` 只包含 `proxy-groups`、`rule-providers` 和 `rules`；节点由 3x-ui
+根据入站自动生成，不要在这个文件里写 `proxies`。地区策略组使用
+`include-all + filter` 按节点名匹配，请把 3x-ui 入站备注写成带地区关键字的形式
+（例如 `🇭🇰 香港-01`、`🇺🇸 美国-01`），否则对应地区组会是空的。
+
+jsDelivr 有缓存，工作流提交后会调用 purge 接口；3x-ui 自身的远程规则缓存约 10 分钟。
+
 维护脚本可在本地运行，使用 Python 3 标准库：
 
 ```bash
 python3 -B -m unittest discover -s tests -v
 python3 -B scripts/sync_acl4ssr.py
+python3 -B scripts/ini_to_3xui.py
 ```
 
 参考：[subconverter 外部配置说明](https://github.com/tindy2013/subconverter/blob/master/README-cn.md#外部配置)、[社区规则来源](https://github.com/ACL4SSR/ACL4SSR)、[GitHub 定时任务说明](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule)。
