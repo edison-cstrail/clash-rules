@@ -268,36 +268,43 @@ rule-providers:
     type: "http"
     behavior: "classical"
     format: "text"
-    url: "https://cdn.jsdelivr.net/gh/edison-cstrail/clash-rules@e4adedbbbf6cc097190068aaaf3d2c8817d2400f/rules/reject.list"
+    url: "https://cdn.jsdelivr.net/gh/edison-cstrail/clash-rules@62404a5e2f52fc31ba73872da77c2bf30324e9ea/rules/reject.list"
     path: "./ruleset/reject.yaml"
     interval: 86400
   direct:
     type: "http"
     behavior: "classical"
     format: "text"
-    url: "https://cdn.jsdelivr.net/gh/edison-cstrail/clash-rules@e4adedbbbf6cc097190068aaaf3d2c8817d2400f/rules/direct.list"
+    url: "https://cdn.jsdelivr.net/gh/edison-cstrail/clash-rules@62404a5e2f52fc31ba73872da77c2bf30324e9ea/rules/direct.list"
     path: "./ruleset/direct.yaml"
     interval: 86400
   proxy:
     type: "http"
     behavior: "classical"
     format: "text"
-    url: "https://cdn.jsdelivr.net/gh/edison-cstrail/clash-rules@e4adedbbbf6cc097190068aaaf3d2c8817d2400f/rules/proxy.list"
+    url: "https://cdn.jsdelivr.net/gh/edison-cstrail/clash-rules@62404a5e2f52fc31ba73872da77c2bf30324e9ea/rules/proxy.list"
     path: "./ruleset/proxy.yaml"
     interval: 86400
   lan:
     type: "http"
     behavior: "classical"
     format: "text"
-    url: "https://cdn.jsdelivr.net/gh/edison-cstrail/clash-rules@e4adedbbbf6cc097190068aaaf3d2c8817d2400f/rules/lan.list"
+    url: "https://cdn.jsdelivr.net/gh/edison-cstrail/clash-rules@62404a5e2f52fc31ba73872da77c2bf30324e9ea/rules/lan.list"
     path: "./ruleset/lan.yaml"
     interval: 86400
   apple-ai:
     type: "http"
     behavior: "classical"
     format: "text"
-    url: "https://cdn.jsdelivr.net/gh/edison-cstrail/clash-rules@e4adedbbbf6cc097190068aaaf3d2c8817d2400f/rules/apple-ai.list"
+    url: "https://cdn.jsdelivr.net/gh/edison-cstrail/clash-rules@62404a5e2f52fc31ba73872da77c2bf30324e9ea/rules/apple-ai.list"
     path: "./ruleset/apple-ai.yaml"
+    interval: 86400
+  ai-extra:
+    type: "http"
+    behavior: "classical"
+    format: "text"
+    url: "https://cdn.jsdelivr.net/gh/edison-cstrail/clash-rules@62404a5e2f52fc31ba73872da77c2bf30324e9ea/rules/ai-extra.list"
+    path: "./ruleset/ai-extra.yaml"
     interval: 86400
   localareanetwork:
     type: "http"
@@ -522,6 +529,7 @@ rules:
   - "RULE-SET,proxy,🚀 节点选择"
   - "RULE-SET,lan,DIRECT"
   - "RULE-SET,apple-ai,💬 Ai平台"
+  - "RULE-SET,ai-extra,💬 Ai平台"
   - "RULE-SET,localareanetwork,🎯 全球直连"
   - "RULE-SET,unban,🎯 全球直连"
   - "RULE-SET,banad,🛑 广告拦截"
