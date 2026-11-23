@@ -27,6 +27,7 @@ PERSONAL_FILES = (
     (PROXY_GROUP, "proxy.list"),
     ("DIRECT", "lan.list"),
     (AI_GROUP, "apple-ai.list"),
+    (AI_GROUP, "ai-extra.list"),
 )
 FLAGS = {"enable_rule_generator", "overwrite_original_rules"}
 ALLOWED_KEYS = FLAGS | {"ruleset", "custom_proxy_group"}
@@ -136,7 +137,7 @@ def render_config(upstream, revision):
         if key.endswith("_rule_base"):
             continue
         if not inserted and line.partition("=")[0].strip() == "ruleset":
-            lines.append("; 个人拦截 → 个人直连 → 个人代理 → 局域网 → Apple AI → 完整社区分流")
+            lines.append("; 个人拦截 → 个人直连 → 个人代理 → 局域网 → Apple AI → 补充 AI → 完整社区分流")
             lines.extend(f"ruleset={rule}" for rule in personal_rulesets(revision))
             lines.append("")
             inserted = True

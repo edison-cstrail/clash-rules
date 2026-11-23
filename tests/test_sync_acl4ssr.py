@@ -29,9 +29,11 @@ class RenderTests(unittest.TestCase):
     def test_personal_rules_precede_complete_upstream(self):
         entries = sync.parse_config(sync.render_config(UPSTREAM, REVISION))
         rules = [value for key, value in entries if key == "ruleset"]
-        self.assertEqual(rules[:5], list(sync.personal_rulesets(REVISION)))
+        personal = list(sync.personal_rulesets(REVISION))
+        self.assertEqual(rules[:len(personal)], personal)
         self.assertIn(f"/{REVISION}/rules/proxy.list", rules[2])
-        self.assertEqual(entries[5:], sync.parse_config(UPSTREAM))
+        self.assertIn(f"💬 Ai平台,{sync.PERSONAL_BASE}/{REVISION}/rules/ai-extra.list", personal)
+        self.assertEqual(entries[len(personal):], sync.parse_config(UPSTREAM))
         self.assertEqual(rules[-1], "Final,[]FINAL")
 
     def test_new_upstream_category_and_group_are_retained(self):
@@ -42,7 +44,10 @@ class RenderTests(unittest.TestCase):
         rendered = sync.render_config(upstream, REVISION)
         self.assertIn("ruleset=New,https://example.com/new.list", rendered)
         self.assertIn("custom_proxy_group=New`select`[]🚀 节点选择", rendered)
-        self.assertEqual(sync.parse_config(rendered)[5:], sync.parse_config(upstream))
+        self.assertEqual(
+            sync.parse_config(rendered)[len(sync.PERSONAL_FILES):],
+            sync.parse_config(upstream),
+        )
 
     def test_apple_ai_precedes_broad_community_apple_rules(self):
         apple = "🍎 苹果服务,https://example.com/apple.list"
@@ -123,7 +128,8 @@ class RevisionTests(unittest.TestCase):
         changed_community = UPSTREAM.replace("direct.list", "new-direct.list")
         updated = sync.render_config(changed_community, revision)
         rulesets = [value for key, value in sync.parse_config(updated) if key == "ruleset"]
-        self.assertEqual(rulesets[:5], list(sync.personal_rulesets(self.first_revision)))
+        personal = list(sync.personal_rulesets(self.first_revision))
+        self.assertEqual(rulesets[:len(personal)], personal)
 
     def test_personal_rule_edit_changes_reference_urls(self):
         self.rules.write_text("DOMAIN,first.test\nDOMAIN,test.test\n")
